@@ -87,9 +87,13 @@ public class TelegramBot extends TelegramLongPollingBot {
                             () -> sendMessage(chatId, "Your haven't set email yet!"));
         } else {
             String email = message.substring(6).trim();
-            User user = new User(chatId, email);
-            userRepository.save(user);
-            sendMessage(chatId, "Email is set to: " + email);
+            if (email.endsWith("@kindle.com")) {
+                User user = new User(chatId, email);
+                userRepository.save(user);
+                sendMessage(chatId, "Email is set to: " + email);
+            } else {
+                sendMessage(chatId, "Only @kindle.com domain is accepted!");
+            }
         }
     }
 
