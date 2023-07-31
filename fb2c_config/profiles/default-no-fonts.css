@@ -2,33 +2,8 @@
     margin: 20px 20px 5px
 }
 
-@font-face {
-    font-family: "Noto";
-    src: url("./profiles/fonts/NotoSerif-MediumH.ttf");
-}
-
-@font-face {
-    font-family: "Noto";
-    src: url("./profiles/fonts/NotoSerif-MediumItalicH.ttf");
-    font-style: italic;
-}
-
-@font-face {
-    font-family: "Noto";
-    src: url("./profiles/fonts/NotoSerif-BoldH.ttf");
-    font-weight: bold;
-}
-
-@font-face {
-    font-family: "Noto";
-    src: url("./profiles/fonts/NotoSerif-BoldItalicH.ttf");
-    font-style: italic;
-    font-weight: bold;
-}
-
 body {
-   font-family: "Noto"; 
-   line-height: 100%; 
+   line-height: 100%;
 }
 
 .h0 {
@@ -77,7 +52,6 @@ body {
 }
 
 .titleblock {
-	font-family: "Noto"; 
     page-break-before: always;
     text-indent: 0em;
     margin-top: 2em;
@@ -195,7 +169,6 @@ body {
 }
 
 .text-author {
-	font-family: "Noto"; 
     page-break-before: avoid;
     text-align: right;
     font-weight: bold
@@ -225,13 +198,11 @@ p {
 }
 
 p.title {
-	font-family: "Noto";
     text-indent: 0em;
     text-align: center
 }
 
 .cite {
-	font-family: "Noto";
     font-style: italic;
     text-indent: 1em;
     margin-top: 0.3em;
@@ -249,7 +220,6 @@ p.title {
 }
 
 .poem {
-	font-family: "Noto";
     text-indent: 0em;
     font-style: italic;
     margin-left: 3em;
@@ -273,13 +243,11 @@ p.title {
 }
 
 .table th {
-	font-family: "Noto";
     border: 1px solid black;
     background: #ccc
 }
 
 .table td {
-	font-family: "Noto";
     border: 1px solid black
 }
 
@@ -289,7 +257,6 @@ p.title {
 }
 
 .inlinenote {
-	font-family: "Noto";
     font-style: italic;
     font-size: 80%;
 	vertical-align: 10%;
@@ -323,7 +290,6 @@ p.title {
 }
 
 .annotation {
-	font-family: "Noto";
     font-size: 80%;
     text-align: center;
     margin: 2em 1em 1em 1em

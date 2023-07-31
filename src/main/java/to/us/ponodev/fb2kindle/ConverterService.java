@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import to.us.ponodev.fb2kindle.config.ConverterConfig;
+import to.us.ponodev.fb2kindle.entity.User;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,14 +25,23 @@ public class ConverterService {
     private final ConverterConfig converterConfig;
 
     @Async
-    public CompletableFuture<ConversionResult> convert(Path inputFile, long chatId, String email) throws InterruptedException, IOException {
+    public CompletableFuture<ConversionResult> convert(Path inputFile, long chatId, User user) throws InterruptedException, IOException {
         log.info("Converting started. File: " + inputFile.getFileName());
 
         String converterPath = converterConfig.getConverterPath();
 
+        String profile = "profiles/default.css";
+        if (!user.isEmbedFonts()) {
+            profile = "profiles/default-no-fonts.css";
+        }
+
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.directory(new File(converterPath));
-        processBuilder.command(converterPath + "/run.sh", String.valueOf(chatId), email, inputFile.toAbsolutePath().toString());
+        processBuilder.command(converterPath + "/run.sh",
+                String.valueOf(chatId),
+                user.getEmail(),
+                inputFile.toAbsolutePath().toString(),
+                profile);
         processBuilder.redirectErrorStream(true);
         Process process;
         try {
@@ -49,6 +59,7 @@ public class ConverterService {
 
         String line;
         while ((line = reader.readLine()) != null) {
+            log.info(line);
             output.append(line).append("\n");
         }
 
@@ -72,8 +83,12 @@ public class ConverterService {
             Path resultPath = Path.of(String.valueOf(jsonResultMap.get("to")));
             log.info("Result file path: {}", resultPath);
             conversionResult = new ConversionResult(0, "Conversion successful", resultPath);
-            inputFile.toFile().delete();
-            resultPath.toFile().delete();
+            if (converterConfig.isDeleteInputFile()) {
+                inputFile.toFile().delete();
+            }
+            if (converterConfig.isDeleteOutputFile()) {
+                resultPath.toFile().delete();
+            }
         } else {
             Object errorMessage = jsonResultMap.get("error");
             log.info("Error detected: {}", errorMessage);

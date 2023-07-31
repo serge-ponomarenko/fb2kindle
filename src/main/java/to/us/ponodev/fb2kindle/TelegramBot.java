@@ -53,6 +53,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     startCommandReceived(chatId, update.getMessage().getChat().getFirstName());
                 } else if (messageText.startsWith("/email")) {
                     emailCommandReceived(chatId, messageText);
+                } else if (messageText.startsWith("/font")) {
+                    fontCommandReceived(chatId);
                 } else if (messageText.startsWith("/users")) {
                     usersCommandReceived(chatId);
                 }
@@ -75,7 +77,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 "And also add fb2kindle.bot@gmail.com to your" + "\n" +
                 "Approved Personal Document E-mail List in" + "\n" +
                 "https://www.amazon.com/hz/mycd/digital-console/contentlist/pdocs/dateDsc" + "\n" +
-                "Manage Your Content & Devices> Preferences > Personal Document Settings";
+                "Manage Your Content & Devices> Preferences > Personal Document Settings" + "\n" +
+                "\n" +
+                "By default there is an embedded Google Noto font in the book." + "\n" +
+                "To switch this setting - use the '/font' command.";
         sendMessage(chatId, answer);
     }
 
@@ -88,13 +93,31 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else {
             String email = message.substring(6).trim();
             if (email.endsWith("@kindle.com")) {
-                User user = new User(chatId, email);
-                userRepository.save(user);
+                userRepository
+                        .findById(chatId)
+                        .ifPresentOrElse(user -> {
+                            user.setEmail(email);
+                            userRepository.save(user);
+                        }, () -> {
+                            User user = new User(chatId, email, true);
+                            userRepository.save(user);
+                        });
                 sendMessage(chatId, "Email is set to: " + email);
             } else {
                 sendMessage(chatId, "Only @kindle.com domain is accepted!");
             }
         }
+    }
+
+    private void fontCommandReceived(long chatId) {
+        userRepository
+                .findById(chatId)
+                .ifPresentOrElse(user -> {
+                            user.setEmbedFonts(!user.isEmbedFonts());
+                            userRepository.save(user);
+                            sendMessage(chatId, "Embed fonts is set to: " + user.isEmbedFonts());
+                        },
+                        () -> sendMessage(chatId, "Your need set your e-mail with '/email' command first!"));
     }
 
     private void usersCommandReceived(long chatId) {
@@ -136,6 +159,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             getFile.setFileId(document.getFileId());
                             try {
                                 org.telegram.telegrambots.meta.api.objects.File telegramFile = execute(getFile);
+                                docName = docName.replace(" ", "_");
                                 Path inputFilePathString = Path.of("./data/userFiles/" + getID + "_" + docName);
 
                                 sendMessage(chatId, "Conversion started. Please wait, it may take a while...");
@@ -143,7 +167,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                                 Path savedFilePath = Path.of(savedFile.getCanonicalPath());
 
                                 CompletableFuture<ConverterService.ConversionResult> conversionResultCompletableFuture =
-                                        converterService.convert(savedFilePath, chatId, user.getEmail());
+                                        converterService.convert(savedFilePath, chatId, user);
 
                                 conversionResultCompletableFuture.thenApply(conversionResult -> {
                                     int exitValue = conversionResult.getCode();

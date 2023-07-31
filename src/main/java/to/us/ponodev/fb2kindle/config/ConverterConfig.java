@@ -14,4 +14,10 @@ public class ConverterConfig {
     @Value("${converter.path}")
     String converterPath;
 
+    @Value("${converter.deleteInputFile}")
+    boolean deleteInputFile;
+
+    @Value("${converter.deleteOutputFile}")
+    boolean deleteOutputFile;
+
 }
