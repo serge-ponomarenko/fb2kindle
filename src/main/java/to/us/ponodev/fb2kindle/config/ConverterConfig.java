@@ -20,4 +20,7 @@ public class ConverterConfig {
     @Value("${converter.deleteOutputFile}")
     boolean deleteOutputFile;
 
+    @Value("${converter.defaultMargin}")
+    String defaultMargin;
+
 }

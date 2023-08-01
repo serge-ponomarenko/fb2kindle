@@ -30,18 +30,26 @@ public class ConverterService {
 
         String converterPath = converterConfig.getConverterPath();
 
-        String profile = "profiles/default.css";
+        String profile = "default.css";
         if (!user.isEmbedFonts()) {
-            profile = "profiles/default-no-fonts.css";
+            profile = "default-no-fonts.css";
+        }
+
+        String margin = converterConfig.getDefaultMargin();
+        if (!user.getMargins().isEmpty()) {
+            margin = user.getMargins();
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.directory(new File(converterPath));
+
         processBuilder.command(converterPath + "/run.sh",
                 String.valueOf(chatId),
                 user.getEmail(),
                 inputFile.toAbsolutePath().toString(),
-                profile);
+                profile,
+                margin
+                );
         processBuilder.redirectErrorStream(true);
         Process process;
         try {
@@ -85,9 +93,6 @@ public class ConverterService {
             conversionResult = new ConversionResult(0, "Conversion successful", resultPath);
             if (converterConfig.isDeleteInputFile()) {
                 inputFile.toFile().delete();
-            }
-            if (converterConfig.isDeleteOutputFile()) {
-                resultPath.toFile().delete();
             }
         } else {
             Object errorMessage = jsonResultMap.get("error");

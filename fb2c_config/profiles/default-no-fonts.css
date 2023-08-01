@@ -191,10 +191,8 @@ p {
     text-align: justify;
     /* padding-bottom: 0.3em; */
 	padding-bottom: 0em;
-	margin-bottom: 0pt;
-    margin-top: 0pt;
-    margin-left: -13pt;
-	margin-right: -13pt
+	/* top right bottom left */
+	margin: marginToSet;
 }
 
 p.title {
